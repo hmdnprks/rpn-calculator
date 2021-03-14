@@ -1,55 +1,57 @@
-const calculator = (expression) => {
-    const operators = {
-        '+': (x, y) => x + y,
-        '-': (x, y) => x - y,
-        '*': (x, y) => x * y,
-        '/': (x, y) => x / y,
-        '^': (x, y) => Math.pow(x, y),
-        '!': (x) => factorial(x),
-        '%': (x) => percentage(x),
-    };
+const operators = require("./utils/operators");
 
+class RPNCalculator {
+  constructor(){
+      this.stacks = [];
+  }
+
+  calculate(expression) {
     if (expression.length < 1) {
-        return 0;
+      return 0;
     }
 
-    let input = expression.split(' ');
-    let stacks = [];
+    let input = expression.split(" ");
     try {
-        input.forEach((unit) => {
-            if (!isNaN(parseFloat(unit))) {
-                stacks.push(parseFloat(unit));
-            } else if (isNaN(parseFloat(unit)) && Object.keys(operators).indexOf(unit) >= 0) {
-                let operandCount = operators[unit].length;
-                if(stacks.length >= operandCount) {
-                    let operands = [];
-                    for (let x=0; x < operandCount; x++) {
-                        operands.push(stacks.pop());
-                    }
-                    stacks.push(operators[unit].apply(null, operands.reverse()));
-                } else {
-                    throw "Not enough operand"
-                }
-            } else {
-                throw "Not a valid input"
-            }
-        });
-
-        return stacks.pop();
+      input.forEach((unit) => {
+        this.checkInput(unit)
+      });
+      return this.stacks.pop();
     } catch (e) {
-        return e;
+      return e;
     }
+  }
 
-};
+  checkInput(input){
+    this.checkNotValidInput(input);
+    if (this.isValidNumber(input)) {
+      this.stacks.push(parseFloat(input));
+    } else {
+        this.doOperation(input);
+    }
+  }
 
-const factorial = num =>  {
-    if (num === 0)
-    { return 1 }
-    return num * factorial(num-1);
+  doOperation(input){
+    let operandCount = operators[input].length;
+    if (this.stacks.length >= operandCount) {
+      let operands = [];
+      for (let x = 0; x < operandCount; x++) {
+        operands.push(this.stacks.pop());
+      }
+      this.stacks.push(operators[input].apply(null, operands.reverse()));
+    } else {
+      throw "Not enough operand";
+    }
+  }
+
+  isValidNumber(input){
+    return !isNaN(parseFloat(input));
+  }
+
+  checkNotValidInput(input){
+    if (!this.isValidNumber(input) && Object.keys(operators).indexOf(input) < 0) {
+      throw "Not a valid input";
+    }
+  }
 }
 
-const percentage = num =>  {
-    return num / 100;
-}
-
-module.exports = calculator;
+module.exports = RPNCalculator;

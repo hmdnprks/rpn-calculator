@@ -1,3 +1,3 @@
-const calculator = require('./calculator')
+const Calculator = require('./calculator')
 
-console.log(calculator('5 7 )'))
+console.log(new Calculator().calculate('5 6 +'))
