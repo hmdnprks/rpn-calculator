@@ -41,4 +41,14 @@ describe('calculator.js', () => {
         let result = calculator('50 %');
         expect(result).toBe(0.5);
     });
+
+    test('should has a greater number than the operator', () => {
+        let result = calculator('5 +');
+        expect(result).toBe('Not enough operand');
+    });
+
+    test('The operator must match the initialized one', () => {
+        let result = calculator('5 )');
+        expect(result).toBe('Not a valid input');
+    });
 });
